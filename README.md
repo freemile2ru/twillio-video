@@ -1,5 +1,5 @@
 <p align="center" style="text-align:center">
-  <h1>twillio-video</h1>
+  <h1>twilio-video</h1>
   <p><img alt="CI STATUS" src="https://github.com/<OWNER>/<REPOSITORY>/workflows/main/badge.svg"/></p>
 </p>
 
@@ -16,7 +16,7 @@ While not a requirement, Bison works best when you start development with the da
 ### The Database
 Bison uses Prisma for database operations. We've added a few conveniences around the default Prisma setup, but if you're familiar with Prisma, you're familiar with databases in Bison.
 
-- [ ] Define an Organization table in `prisma/schema.prisma`. 
+- [ ] Define an Organization table in `prisma/schema.prisma`.
 
 We suggest copying the `id`, `createdAt` and `updatedAt` fields from the `User` model.
 ```
@@ -61,7 +61,7 @@ Bison uses [Nexus Schema](https://nexusjs.org/docs/) to create the GraphQL API. 
 - [ ] Edit the new module to reflect what you want to expose via the API. In the following Mutation example, we alias the Mutation name, require a user to be logged in, and force the new Organization to be owned by the logged in user. All in about 10 lines of code!
 
 Because Nexus is strongly typed, all of the `t.` operations should autocomplete in your editor. Bison uses the [Prisma plugin](https://nexusjs.org/docs/pluginss/prisma/api) for Nexus, which enables the `t.model` and `t.crud` functions.
- 
+
 ```ts
 // Organization Type
 export const Organization = objectType({
@@ -238,7 +238,7 @@ export function OrganizationForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="name" ref={register({ required: true })} />
       {errors.name && <span>This field is required</span>}
-      
+
       <input type="submit" />
     </form>
   );

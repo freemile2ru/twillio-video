@@ -75,7 +75,7 @@ type Query {
   """
   Returns the twilio auth token for user
   """
-  twilioToken(username: String!): TwilioAuthToken
+  twilioToken: TwilioAuthToken
 }
 
 enum Role {
@@ -132,11 +132,11 @@ input StringFilter {
 }
 
 """
-Payload returned if login or signup is successful
+Payload returned if query twilio token is successful
 """
 type TwilioAuthToken {
   """
-  The current Twilio JWT token. Use in Authentication header
+  The current Twilio JWT token
   """
   token: String
 }

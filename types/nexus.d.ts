@@ -273,12 +273,6 @@ export interface NexusGenArgTypes {
       data: NexusGenInputs['SignupInput']; // SignupInput!
     };
   };
-  Query: {
-    twilioToken: {
-      // args
-      username: string; // String!
-    };
-  };
 }
 
 export interface NexusGenAbstractTypeMembers {}

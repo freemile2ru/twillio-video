@@ -5,10 +5,10 @@ import { generateUserToken } from '../../lib/twilio';
 // Twilio Token Type
 export const TwilioAuthToken = objectType({
   name: 'TwilioAuthToken',
-  description: 'Payload returned if login or signup is successful',
+  description: 'Payload returned if query twilio token is successful',
   definition(t) {
     t.string('token', {
-      description: 'The current Twilio JWT token. Use in Authentication header',
+      description: 'The current Twilio JWT token',
     });
   },
 });
@@ -21,11 +21,8 @@ export const TwilioQueries = extendType({
     t.field('twilioToken', {
       type: 'TwilioAuthToken',
       description: 'Returns the twilio auth token for user',
-      args: {
-        username: nonNull(stringArg()),
-      },
-      resolve: (_root, _args) => {
-        return { token: generateUserToken(_args.username) };
+      resolve: (_root, _args, ctx) => {
+        return { token: generateUserToken(ctx.user?.email) };
       },
     });
   },

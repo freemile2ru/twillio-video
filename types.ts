@@ -71,10 +71,6 @@ export type Query = {
   twilioToken?: Maybe<TwilioAuthToken>;
 };
 
-export type QueryTwilioTokenArgs = {
-  username: Scalars['String'];
-};
-
 export enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',
@@ -118,10 +114,10 @@ export type StringFilter = {
   startsWith?: Maybe<Scalars['String']>;
 };
 
-/** Payload returned if login or signup is successful */
+/** Payload returned if query twilio token is successful */
 export type TwilioAuthToken = {
   __typename?: 'TwilioAuthToken';
-  /** The current Twilio JWT token. Use in Authentication header */
+  /** The current Twilio JWT token */
   token?: Maybe<Scalars['String']>;
 };
 
@@ -180,6 +176,12 @@ export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
 export type MeQuery = { __typename?: 'Query' } & {
   me?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'email'>>;
+};
+
+export type TwilioTokenQueryVariables = Exact<{ [key: string]: never }>;
+
+export type TwilioTokenQuery = { __typename?: 'Query' } & {
+  twilioToken?: Maybe<{ __typename?: 'TwilioAuthToken' } & Pick<TwilioAuthToken, 'token'>>;
 };
 
 export const LoginDocument = gql`
@@ -313,3 +315,50 @@ export function useMeLazyQuery(
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = ApolloReactCommon.QueryResult<MeQuery, MeQueryVariables>;
+export const TwilioTokenDocument = gql`
+  query twilioToken {
+    twilioToken {
+      token
+    }
+  }
+`;
+
+/**
+ * __useTwilioTokenQuery__
+ *
+ * To run a query within a React component, call `useTwilioTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTwilioTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTwilioTokenQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTwilioTokenQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<TwilioTokenQuery, TwilioTokenQueryVariables>
+) {
+  return ApolloReactHooks.useQuery<TwilioTokenQuery, TwilioTokenQueryVariables>(
+    TwilioTokenDocument,
+    baseOptions
+  );
+}
+
+export function useTwilioTokenLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TwilioTokenQuery, TwilioTokenQueryVariables>
+) {
+  return ApolloReactHooks.useLazyQuery<TwilioTokenQuery, TwilioTokenQueryVariables>(
+    TwilioTokenDocument,
+    baseOptions
+  );
+}
+
+export type TwilioTokenQueryHookResult = ReturnType<typeof useTwilioTokenQuery>;
+export type TwilioTokenLazyQueryHookResult = ReturnType<typeof useTwilioTokenLazyQuery>;
+export type TwilioTokenQueryResult = ApolloReactCommon.QueryResult<
+  TwilioTokenQuery,
+  TwilioTokenQueryVariables
+>;

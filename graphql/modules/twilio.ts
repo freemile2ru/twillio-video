@@ -1,4 +1,4 @@
-import { objectType, extendType, nonNull, stringArg } from 'nexus';
+import { objectType, extendType } from 'nexus';
 
 import { generateUserToken } from '../../lib/twilio';
 

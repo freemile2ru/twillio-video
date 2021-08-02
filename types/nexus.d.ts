@@ -91,6 +91,10 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  MeetingOrderByInput: {
+    // input type
+    hello?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  };
   SignupInput: {
     // input type
     email: string; // String!
@@ -105,6 +109,14 @@ export interface NexusGenInputs {
   SignupProfileInput: {
     // input type
     create: NexusGenInputs['SignupProfileCreateInput']; // SignupProfileCreateInput!
+  };
+  SomethingMutationInput: {
+    // input type
+    hello: string; // String!
+  };
+  SomethingQueryInput: {
+    // input type
+    hello: string; // String!
   };
   StringFilter: {
     // input type
@@ -132,7 +144,7 @@ export interface NexusGenInputs {
   };
   UserWhereUniqueInput: {
     // input type
-    email?: string | null; // String
+    email?: NexusGenScalars['EmailAddress'] | null; // EmailAddress
     id?: string | null; // ID
   };
 }
@@ -161,6 +173,7 @@ export interface NexusGenObjects {
     token?: string | null; // String
     user?: NexusGenRootTypes['User'] | null; // User
   };
+  Meeting: PrismaClient.Meeting;
   Mutation: {};
   Profile: PrismaClient.Profile;
   Query: {};
@@ -185,10 +198,22 @@ export interface NexusGenFieldTypes {
     token: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
   };
+  Meeting: {
+    // field return type
+    completed: boolean; // Boolean!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: string; // ID!
+    meeting: string; // String!
+    name: string; // String!
+    reasonForVisit: string; // String!
+    updatedAt: NexusGenScalars['DateTime']; // DateTime!
+    users: NexusGenRootTypes['User'] | null; // User
+  };
   Mutation: {
     // field return type
     login: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     signup: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
+    somethingMutation: string | null; // String
   };
   Profile: {
     // field return type
@@ -203,6 +228,7 @@ export interface NexusGenFieldTypes {
   Query: {
     // field return type
     me: NexusGenRootTypes['User'] | null; // User
+    meetings: Array<NexusGenRootTypes['Meeting'] | null> | null; // [Meeting]
     twilioToken: NexusGenRootTypes['TwilioAuthToken'] | null; // TwilioAuthToken
   };
   TwilioAuthToken: {
@@ -226,10 +252,22 @@ export interface NexusGenFieldTypeNames {
     token: 'String';
     user: 'User';
   };
+  Meeting: {
+    // field return type name
+    completed: 'Boolean';
+    createdAt: 'DateTime';
+    id: 'ID';
+    meeting: 'String';
+    name: 'String';
+    reasonForVisit: 'String';
+    updatedAt: 'DateTime';
+    users: 'User';
+  };
   Mutation: {
     // field return type name
     login: 'AuthPayload';
     signup: 'AuthPayload';
+    somethingMutation: 'String';
   };
   Profile: {
     // field return type name
@@ -244,6 +282,7 @@ export interface NexusGenFieldTypeNames {
   Query: {
     // field return type name
     me: 'User';
+    meetings: 'Meeting';
     twilioToken: 'TwilioAuthToken';
   };
   TwilioAuthToken: {
@@ -271,6 +310,10 @@ export interface NexusGenArgTypes {
     signup: {
       // args
       data: NexusGenInputs['SignupInput']; // SignupInput!
+    };
+    somethingMutation: {
+      // args
+      data: NexusGenInputs['SomethingMutationInput']; // SomethingMutationInput!
     };
   };
 }

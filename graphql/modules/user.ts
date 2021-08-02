@@ -117,7 +117,7 @@ export const Mutations = extendType({
         const updatedArgs = {
           data: {
             ...data,
-            roles: { set: [Role.USER] },
+            roles: { set: ['PATIENT'] },
             password: hashPassword(data.password),
           },
         };

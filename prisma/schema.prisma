@@ -2,10 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 // Latest about migrations:  https://www.prisma.io/blog/prisma-migrate-ga-b5eno5g08d0b
 
-
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 generator prisma_client {
@@ -23,16 +23,28 @@ model Profile {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   password  String
-  roles     Role[]
+  role      Role      @default(PATIENT)
   profile   Profile?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  meetings  Meeting[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Meeting {
+  id             String   @id @default(cuid())
+  name           String
+  reasonForVisit String
+  meeting        String
+  users          User[]
+  completed      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 enum Role {
-  USER
-  ADMIN
+  PATIENT
+  PROVIDER
 }

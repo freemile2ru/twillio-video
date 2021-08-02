@@ -1,5 +1,3 @@
-import { Role } from '@prisma/client';
-
 import { graphQLRequest, graphQLRequestAsUser, resetDB, disconnect } from '../../helpers';
 import { UserFactory } from '../../factories/user';
 
@@ -61,7 +59,7 @@ describe('users query', () => {
       `;
 
       // create an admin and a regular user
-      const user1 = await UserFactory.create({ roles: { set: [Role.ADMIN] } });
+      const user1 = await UserFactory.create({ roles: { set: ['PROVIDER'] } });
       const user2 = await UserFactory.create();
 
       const response = await graphQLRequestAsUser(user1, { query });
@@ -110,7 +108,7 @@ describe('users query', () => {
       `;
 
       // create an admin and a regular user
-      const user1 = await UserFactory.create({ roles: { set: [Role.ADMIN] } });
+      const user1 = await UserFactory.create({ roles: { set: ['PROVIDER'] } });
       const user2 = await UserFactory.create();
       const variables = { id: user2.id };
 

@@ -1,5 +1,3 @@
-import { Role } from '@prisma/client';
-
 import { graphQLRequest, resetDB, disconnect } from '../../helpers';
 import { UserFactory } from '../../factories/user';
 
@@ -48,7 +46,7 @@ describe('User signup mutation', () => {
       `;
 
       const variables = {
-        data: { email: 'hello@wee.net', password: 'fake', roles: { set: [Role.ADMIN] } },
+        data: { email: 'hello@wee.net', password: 'fake', roles: { set: ['PROVIDER'] } },
       };
 
       const response = await graphQLRequest({ query, variables });

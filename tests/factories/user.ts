@@ -16,7 +16,7 @@ export const UserFactory = {
       id: chance.guid(),
       email: chance.email(),
       password: 'test1234',
-      roles: { set: [Role.USER] },
+      roles: { set: ['PATIENT'] },
       ...attrs,
     };
   },

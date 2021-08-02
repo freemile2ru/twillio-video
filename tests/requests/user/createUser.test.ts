@@ -1,5 +1,3 @@
-import { Role } from '@prisma/client';
-
 import { resetDB, disconnect, graphQLRequestAsUser } from '../../helpers';
 import { UserFactory } from '../../factories/user';
 
@@ -43,16 +41,16 @@ describe('User createUser mutation', () => {
         }
       `;
 
-      const admin = await UserFactory.create({ roles: { set: [Role.ADMIN] } });
+      const admin = await UserFactory.create({ roles: { set: ['PROVIDER'] } });
 
       const variables = {
-        data: { email: 'hello@wee.net', password: 'fake', roles: { set: [Role.ADMIN] } },
+        data: { email: 'hello@wee.net', password: 'fake', roles: { set: ['PROVIDER'] } },
       };
 
       const response = await graphQLRequestAsUser(admin, { query, variables });
       const user = response.body.data.createUser;
 
-      const expectedRoles = [Role.ADMIN];
+      const expectedRoles = ['PROVIDER'];
       expect(user.id).not.toBeNull();
       expect(user.roles).toEqual(expectedRoles);
     });

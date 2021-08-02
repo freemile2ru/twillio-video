@@ -9,6 +9,7 @@ export function Track({ track }) {
       const child = track.attach();
       trackRef?.current?.appendChild(child);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div ref={trackRef}></div>;

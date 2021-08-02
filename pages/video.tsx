@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
-import { Heading, Center, Flex, Button } from '@chakra-ui/react';
-import { createLocalTracks, connect } from 'twilio-video';
+import { Heading, Button } from '@chakra-ui/react';
+import { connect } from 'twilio-video';
 
 import { useTwilio } from '../context/twilio';
 import { Room } from '../components/Room';

@@ -9,7 +9,9 @@ export function Participant({
   participant,
   localParticipant = false,
   children = null,
-  active = false,
+  activeWindow = false,
+  onDoubleClick = () => null,
+  isActive = false,
 }) {
   const existingPublications = Array.from(participant.tracks.values());
   const existingTracks = existingPublications.map((publication: any) => publication.track);
@@ -28,6 +30,7 @@ export function Participant({
     if (!localParticipant) {
       participant.on('trackSubscribed', (track) => addTrack(track));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addTrack = (track) => {
@@ -89,7 +92,14 @@ export function Participant({
   };
 
   return (
-    <div style={active ? styles.activeParticipant : styles.participant} id={participant.identity}>
+    <div
+      style={
+        activeWindow
+          ? styles.activeWindowParticipant
+          : { ...styles.participant, ...(isActive && { border: '5px solid yellow' }) }
+      }
+      onDoubleClick={onDoubleClick}
+    >
       {tracks.map((track, index) => (
         <Track key={index} track={track} />
       ))}
@@ -128,18 +138,16 @@ export function Participant({
 
 const styles = {
   participant: {
-    boxSizing: 'border-box',
     position: 'relative',
-    borderRadius: '8px',
     marginLeft: '.75vw',
     marginBottom: '.75vw',
     overflow: 'hidden',
+    height: '100%',
     width: '300px',
     display: 'flex',
     justifyContent: 'center',
   },
-  activeParticipant: {
-    boxSizing: 'border-box',
+  activeWindowParticipant: {
     position: 'relative',
     borderRadius: '8px',
     marginLeft: '.75vw',
@@ -159,5 +167,6 @@ const styles = {
   icons: {
     position: 'absolute',
     bottom: '10px',
+    backgroundColor: 'transparent',
   },
 };

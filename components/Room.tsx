@@ -20,6 +20,7 @@ export function Room({ room, returnToLobby }) {
     window.addEventListener('beforeunload', leaveRoom);
 
     return () => leaveRoom();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addParticipant = (participant) => {

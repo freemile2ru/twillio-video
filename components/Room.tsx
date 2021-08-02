@@ -10,8 +10,7 @@ export function Room({ room, returnToLobby }) {
     Array.from(room.participants.values())
   );
 
-  const message = 'Hola! Room Created!';
-
+  const [activeParticipant, setActiveParticipant] = useState(room.localParticipant);
   useEffect(() => {
     room.on('participantConnected', (participant) => addParticipant(participant));
     room.on('participantDisconnected', (participant) => removeParticipant(participant));
@@ -45,14 +44,23 @@ export function Room({ room, returnToLobby }) {
           key={room.localParticipant.identity}
           localParticipant={true}
           participant={room.localParticipant}
-        />
+        >
+          <Button onClick={leaveRoom}>Leave</Button>
+        </Participant>
         {remoteParticipants.map((participant, index) => (
           <Participant key={index} participant={participant} />
         ))}
       </div>
-      <Button id="leaveRoom" onClick={leaveRoom}>
-        Leave Room
-      </Button>
+
+      <Participant
+        localParticipant={activeParticipant.identity === room.localParticipant.identity}
+        active={true}
+        participant={activeParticipant}
+      >
+        {activeParticipant.identity === room.localParticipant.identity && (
+          <Button onClick={leaveRoom}>Leave</Button>
+        )}
+      </Participant>
     </div>
   );
 }
@@ -60,7 +68,8 @@ export function Room({ room, returnToLobby }) {
 const style = {
   participants: {
     display: 'flex',
-    flexWrap: 'wrap',
+    justifyContent: 'center',
+    flexDirection: 'row',
     width: '100%',
     marginLeft: '-.75vw',
   },

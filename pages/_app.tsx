@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 
 import { AllProviders } from '../components/AllProviders';
 import { useAuth } from '../context/auth';
+import '../Styles/styles.css';
 
 /**
  * Dynamically load layouts. This codesplits and prevents code from the logged in layout from being

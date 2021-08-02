@@ -4,21 +4,26 @@
 </p>
 
 # Getting Started Tutorial
+
 This checklist and mini-tutorial will make sure you make the most of your shiny new Bison app.
 
 ## Migrate your database and start the dev server
+
 - [ ] Run `yarn db:migrate` to prep and migrate your local database. If this fails, make sure you have Postgres running and the generated `DATABASE_URL` values are correct in your `.env` files.
 - [ ] Run `yarn dev` to start your development server
 
 ## Complete a Bison workflow
+
 While not a requirement, Bison works best when you start development with the database and API layer. We will illustrate how to use this by adding the concept of an organization to our app.
 
 ### The Database
+
 Bison uses Prisma for database operations. We've added a few conveniences around the default Prisma setup, but if you're familiar with Prisma, you're familiar with databases in Bison.
 
 - [ ] Define an Organization table in `prisma/schema.prisma`.
 
 We suggest copying the `id`, `createdAt` and `updatedAt` fields from the `User` model.
+
 ```
 model Organization {
   id        String   @id @default(cuid())
@@ -36,7 +41,7 @@ model User {
   id             String        @id @default(cuid())
   email          String        @unique
   password       String
-  roles          Role[]
+  role          Role[]
   profile        Profile?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -48,11 +53,13 @@ model User {
 - [ ] Generate a migration with `yarn g:migration`.
 
 You should see a new folder in `prisma/migrations`. We recommend opening the `README.md` file within the new migration folder to double check the sql that was generated for you.
+
 - [ ] Migrate the database with `yarn db:migrate`
 
 For more on Prisma, [view the docs](https://www.prisma.io/docs/).
 
 ### The GraphQL API
+
 With the database changes complete, we need to decide what types, queries, and mutations to expose in our GraphQL API.
 
 Bison uses [Nexus Schema](https://nexusjs.org/docs/) to create the GraphQL API. Nexus provides a strongly-typed, concise way of defining GraphQL types and operations.
@@ -93,6 +100,7 @@ export const OrganizationMutations = extendType({
 ```
 
 ### Understanding the GraphQL API and TypeScript types
+
 - [ ] Open `api.graphql` and look at our the new definitions that were generated for you:
 
 ```graphql
@@ -134,7 +142,9 @@ input OrganizationWhereUniqueInput {
 - [ ] Open up `types.ts` to see the generated TypeScript types that correspond with the graphql changes.
 
 ### API Request Tests
+
 Let's confirm the API changes using a request test. To do this:
+
 - [ ] Generate a new factory: `yarn g:test:factory organization`
 - [ ] Add a default value for organization name in the build function. You can use any of the methods from the `chance` library.
 
@@ -193,7 +203,7 @@ describe('createOrganization mutation', () => {
 
 ```ts
 it('sets the user to the logged in user', async () => {
-    const query = `
+  const query = `
     mutation createOrganization($data: OrganizationCreateInput!) {
       createOrganization(data: $data) {
         id
@@ -205,17 +215,18 @@ it('sets the user to the logged in user', async () => {
     }
   `;
 
-    const user = await UserFactory.create();
-    const variables = { data: { name: 'Cool Company', users: { connect: [{ id: 'notmyid' }] } } };
-    const response = await graphQLRequestAsUser(user, { query, variables });
-    const organization = response.body.data.createOrganization;
-    const [organizationUser] = organization.users;
+  const user = await UserFactory.create();
+  const variables = { data: { name: 'Cool Company', users: { connect: [{ id: 'notmyid' }] } } };
+  const response = await graphQLRequestAsUser(user, { query, variables });
+  const organization = response.body.data.createOrganization;
+  const [organizationUser] = organization.users;
 
-    expect(organizationUser.id).toEqual(user.id);
-  });
+  expect(organizationUser.id).toEqual(user.id);
+});
 ```
 
 ### Add a Frontend page and form that creates an organization
+
 Now that we have the API finished, we can move to the frontend changes.
 
 - [ ] Create a new page to create organizations: `yarn g:page organizations/new`
@@ -226,12 +237,11 @@ Now that we have the API finished, we can move to the frontend changes.
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-
 export function OrganizationForm() {
   const { register, handleSubmit, errors } = useForm();
 
   async function onSubmit(data) {
-    console.log(data)
+    console.log(data);
   }
 
   return (
@@ -298,7 +308,7 @@ export function useCreateOrganizationMutation(
     CreateOrganizationMutation,
     CreateOrganizationMutationVariables
   >
-)
+);
 ```
 
 - [ ] Use the newly generated hook to save the results of the form:

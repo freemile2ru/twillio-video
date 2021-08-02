@@ -1,4 +1,4 @@
-import { objectType, extendType, arg, nonNull } from 'nexus';
+import { objectType, extendType, arg, nonNull, inputObjectType } from 'nexus';
 
 // import { isAdmin } from '../services/permissions';
 
@@ -9,20 +9,12 @@ export const Meeting = objectType({
   definition(t) {
     t.nonNull.id('id');
     t.nonNull.string('name');
-    t.nonNull.string('meeting');
     t.nonNull.string('reasonForVisit');
     t.nonNull.boolean('completed');
     t.nonNull.date('createdAt');
     t.nonNull.date('updatedAt');
-    t.field('users', {
+    t.nonNull.list.field('users', {
       type: 'User',
-      resolve: (parent, _, context) => {
-        return context.prisma.meeting
-          .findUnique({
-            where: { id: parent.id },
-          })
-          .users();
-      },
     });
   },
 });
@@ -55,18 +47,74 @@ export const MeetingQueries = extendType({
 export const MeetingMutations = extendType({
   type: 'Mutation',
   definition: (t) => {
-    t.field('somethingMutation', {
-      type: 'String',
-      description: 'Does something',
+    t.field('createMeetingMutation', {
+      type: 'Meeting',
+      description: 'Patient Initialize/ request for a meeting ',
       args: {
-        data: nonNull(arg({ type: 'SomethingMutationInput' })),
+        data: nonNull(arg({ type: 'MeetingCreateInput' })),
       },
       authorize: (_root, _args, ctx) => !!ctx.user,
-      resolve: async (_root, args) => {
-        console.log(args.data.hello);
+      resolve: async (_root, args, ctx) => {
+        const { name, reasonForVisit } = args.data;
 
-        return args.data.hello;
+        const meeting = await ctx.prisma.meeting.create({
+          data: {
+            name,
+            reasonForVisit,
+          },
+        });
+
+        return await ctx.prisma.meeting.update({
+          where: {
+            id: meeting.id,
+          },
+          data: {
+            users: {
+              set: [{ id: ctx.user.id }],
+            },
+          },
+        });
       },
     });
+
+    t.field('joinMeetingMutation', {
+      type: 'Meeting',
+      description: 'Patient Initialize/ request for a meeting ',
+      args: {
+        data: nonNull(arg({ type: 'JoinMeetingInput' })),
+      },
+      authorize: (_root, _args, ctx) => !!ctx.user,
+      resolve: async (_root, args, ctx) => {
+        const { id } = args.data;
+
+        return await ctx.prisma.meeting.update({
+          where: {
+            id,
+          },
+          data: {
+            users: {
+              set: [{ id: ctx.user.id }],
+            },
+          },
+        });
+      },
+    });
+  },
+});
+
+export const MeetingCreateInput = inputObjectType({
+  name: 'MeetingCreateInput',
+  description: 'Input required for Patient Create Meeting',
+  definition: (t) => {
+    t.nonNull.string('name');
+    t.nonNull.string('reasonForVisit');
+  },
+});
+
+export const JoinMeetingInput = inputObjectType({
+  name: 'JoinMeetingInput',
+  description: 'Input required for Provider Join Meeting',
+  definition: (t) => {
+    t.nonNull.string('id');
   },
 });

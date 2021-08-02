@@ -1,13 +1,13 @@
 import Chance from 'chance';
-import { User, Role } from '@prisma/client';
+import { User } from '@prisma/client';
 
 import { buildPrismaIncludeFromAttrs, prisma } from '../helpers';
 import { hashPassword } from '../../services/auth';
 
 const chance = new Chance();
 
-interface UserAttrs extends Omit<Partial<User>, 'roles'> {
-  roles?: { set: Role[] };
+interface UserAttrs extends Omit<Partial<User>, 'role'> {
+  role?: string;
 }
 
 export const UserFactory = {
@@ -16,7 +16,7 @@ export const UserFactory = {
       id: chance.guid(),
       email: chance.email(),
       password: 'test1234',
-      roles: { set: ['PATIENT'] },
+      role: 'PATIENT',
       ...attrs,
     };
   },
@@ -28,7 +28,7 @@ export const UserFactory = {
     if (includes) options.include = includes;
 
     return await prisma.user.create({
-      data: { ...user, password: hashPassword(user.password), roles: user.roles as any },
+      data: { ...user, password: hashPassword(user.password), role: user.role as any },
       ...options,
     });
   },

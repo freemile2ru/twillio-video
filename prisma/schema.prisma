@@ -26,7 +26,7 @@ model User {
   id        String    @id @default(cuid())
   email     String    @unique
   password  String
-  role      Role      @default(PATIENT)
+  role      String    @default("PATIENT")
   profile   Profile?
   meetings  Meeting[]
   createdAt DateTime  @default(now())
@@ -37,14 +37,8 @@ model Meeting {
   id             String   @id @default(cuid())
   name           String
   reasonForVisit String
-  meeting        String
   users          User[]
   completed      Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-}
-
-enum Role {
-  PATIENT
-  PROVIDER
 }

@@ -1,6 +1,3 @@
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('PATIENT', 'PROVIDER');
-
 -- CreateTable
 CREATE TABLE "Profile" (
     "id" TEXT NOT NULL,
@@ -18,7 +15,7 @@ CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "Role" NOT NULL DEFAULT E'PATIENT',
+    "role" TEXT NOT NULL DEFAULT E'PATIENT',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -30,7 +27,6 @@ CREATE TABLE "Meeting" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "reasonForVisit" TEXT NOT NULL,
-    "meeting" TEXT NOT NULL,
     "completed" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

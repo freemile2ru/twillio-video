@@ -128,7 +128,7 @@ export type User = {
   email?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   profile?: Maybe<Profile>;
-  roles: Array<Role>;
+  role: Array<Role>;
   updatedAt: Scalars['DateTime'];
 };
 

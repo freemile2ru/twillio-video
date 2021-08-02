@@ -46,7 +46,7 @@ describe('User signup mutation', () => {
       `;
 
       const variables = {
-        data: { email: 'hello@wee.net', password: 'fake', roles: { set: ['PROVIDER'] } },
+        data: { email: 'hello@wee.net', password: 'fake', role: 'PROVIDER' },
       };
 
       const response = await graphQLRequest({ query, variables });
@@ -54,7 +54,7 @@ describe('User signup mutation', () => {
 
       expect(errors).toMatchInlineSnapshot(`
         Array [
-          "Variable \\"$data\\" got invalid value { email: \\"hello@wee.net\\", password: \\"fake\\", roles: { set: [Array] } }; Field \\"roles\\" is not defined by type \\"SignupInput\\".",
+          "Variable \\"$data\\" got invalid value { email: \\"hello@wee.net\\", password: \\"fake\\", role: { set: [Array] } }; Field \\"role\\" is not defined by type \\"SignupInput\\".",
         ]
       `);
     });
@@ -74,7 +74,7 @@ describe('User signup mutation', () => {
       `;
 
       // eslint-disable-next-line
-      const { id, roles, ...attrs } = UserFactory.build();
+      const { id, role, ...attrs } = UserFactory.build();
       const variables = { data: { ...attrs } };
       const response = await graphQLRequest({ query, variables });
       const { token, user } = response.body.data.signup;

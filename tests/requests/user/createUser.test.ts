@@ -36,23 +36,23 @@ describe('User createUser mutation', () => {
         mutation SIGNUP($data: UserCreateInput!) {
           createUser(data: $data) {
             id
-            roles
+            role
           }
         }
       `;
 
-      const admin = await UserFactory.create({ roles: { set: ['PROVIDER'] } });
+      const admin = await UserFactory.create({ role: 'PROVIDER' });
 
       const variables = {
-        data: { email: 'hello@wee.net', password: 'fake', roles: { set: ['PROVIDER'] } },
+        data: { email: 'hello@wee.net', password: 'fake', role: 'PROVIDER' },
       };
 
       const response = await graphQLRequestAsUser(admin, { query, variables });
       const user = response.body.data.createUser;
 
-      const expectedRoles = ['PROVIDER'];
+      const expectedRoles = 'PROVIDER';
       expect(user.id).not.toBeNull();
-      expect(user.roles).toEqual(expectedRoles);
+      expect(user.role).toEqual(expectedRoles);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { objectType, extendType } from 'nexus';
+import { objectType, extendType, stringArg, nonNull } from 'nexus';
 
 import { generateUserToken } from '../../lib/twilio';
 
@@ -20,9 +20,29 @@ export const TwilioQueries = extendType({
     // Me Query
     t.field('twilioToken', {
       type: 'TwilioAuthToken',
+      args: {
+        meetingId: nonNull(stringArg()),
+      },
       description: 'Returns the twilio auth token for user',
-      resolve: (_root, _args, ctx) => {
-        return { token: generateUserToken(ctx.user?.email) };
+      resolve: async (_root, args, ctx) => {
+        const { meetingId } = args;
+
+        const meeting = await ctx.prisma.meeting.findFirst({
+          where: {
+            id: meetingId,
+          },
+          include: {
+            users: true,
+          },
+        });
+
+        if (meeting && meeting.users.find((user) => user.id === ctx.user.id)) {
+          return { token: generateUserToken(ctx.user?.email) };
+        }
+
+        return {
+          token: null,
+        };
       },
     });
   },

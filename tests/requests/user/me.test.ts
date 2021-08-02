@@ -46,7 +46,7 @@ describe('me query', () => {
         query ME {
           me {
             email
-            roles
+            role
           }
         }
       `;
@@ -62,9 +62,7 @@ describe('me query', () => {
           "data": Object {
             "me": Object {
               "email": "foo@wee.net",
-              "roles": Array [
-                "USER",
-              ],
+              "role": "PATIENT",
             },
           },
           "extensions": Object {

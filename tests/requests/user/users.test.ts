@@ -59,7 +59,7 @@ describe('users query', () => {
       `;
 
       // create an admin and a regular user
-      const user1 = await UserFactory.create({ roles: { set: ['PROVIDER'] } });
+      const user1 = await UserFactory.create({ role: 'PROVIDER' });
       const user2 = await UserFactory.create();
 
       const response = await graphQLRequestAsUser(user1, { query });
@@ -108,7 +108,7 @@ describe('users query', () => {
       `;
 
       // create an admin and a regular user
-      const user1 = await UserFactory.create({ roles: { set: ['PROVIDER'] } });
+      const user1 = await UserFactory.create({ role: 'PROVIDER' });
       const user2 = await UserFactory.create();
       const variables = { id: user2.id };
 

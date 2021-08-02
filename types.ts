@@ -33,12 +33,47 @@ export type AuthPayload = {
   user?: Maybe<User>;
 };
 
+/** Input required for Provider Join Meeting */
+export type JoinMeetingInput = {
+  id: Scalars['String'];
+};
+
+/** A Meeting */
+export type Meeting = {
+  __typename?: 'Meeting';
+  completed: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  reasonForVisit: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  users: Array<Maybe<User>>;
+};
+
+/** Input required for Patient Create Meeting */
+export type MeetingCreateInput = {
+  name: Scalars['String'];
+  reasonForVisit: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Patient Initialize/ request for a meeting */
+  createMeetingMutation?: Maybe<Meeting>;
+  /** Patient Initialize/ request for a meeting */
+  joinMeetingMutation?: Maybe<Meeting>;
   /** Login to an existing account */
   login?: Maybe<AuthPayload>;
   /** Signup for an account */
   signup?: Maybe<AuthPayload>;
+};
+
+export type MutationCreateMeetingMutationArgs = {
+  data: MeetingCreateInput;
+};
+
+export type MutationJoinMeetingMutationArgs = {
+  data: JoinMeetingInput;
 };
 
 export type MutationLoginArgs = {
@@ -67,14 +102,15 @@ export type Query = {
   __typename?: 'Query';
   /** Returns the currently logged in user */
   me?: Maybe<User>;
+  /** Returns available meetings */
+  meetings?: Maybe<Array<Maybe<Meeting>>>;
   /** Returns the twilio auth token for user */
   twilioToken?: Maybe<TwilioAuthToken>;
 };
 
-export enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
+export type QueryTwilioTokenArgs = {
+  meetingId: Scalars['String'];
+};
 
 /** Input required for a user to signup */
 export type SignupInput = {
@@ -128,7 +164,7 @@ export type User = {
   email?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   profile?: Maybe<Profile>;
-  role: Array<Role>;
+  role: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
 
@@ -157,7 +193,21 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 export type LoginMutation = { __typename?: 'Mutation' } & {
-  login?: Maybe<{ __typename?: 'AuthPayload' } & Pick<AuthPayload, 'token'>>;
+  login?: Maybe<
+    { __typename?: 'AuthPayload' } & Pick<AuthPayload, 'token'> & {
+        user?: Maybe<{ __typename?: 'User' } & Pick<User, 'role'>>;
+      }
+  >;
+};
+
+export type CreateMeetingMutationMutationVariables = Exact<{
+  data: MeetingCreateInput;
+}>;
+
+export type CreateMeetingMutationMutation = { __typename?: 'Mutation' } & {
+  createMeetingMutation?: Maybe<
+    { __typename?: 'Meeting' } & Pick<Meeting, 'id' | 'name' | 'reasonForVisit'>
+  >;
 };
 
 export type SignupMutationVariables = Exact<{
@@ -167,7 +217,7 @@ export type SignupMutationVariables = Exact<{
 export type SignupMutation = { __typename?: 'Mutation' } & {
   signup?: Maybe<
     { __typename?: 'AuthPayload' } & Pick<AuthPayload, 'token'> & {
-        user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id'>>;
+        user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'role'>>;
       }
   >;
 };
@@ -178,7 +228,9 @@ export type MeQuery = { __typename?: 'Query' } & {
   me?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'email'>>;
 };
 
-export type TwilioTokenQueryVariables = Exact<{ [key: string]: never }>;
+export type TwilioTokenQueryVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
 
 export type TwilioTokenQuery = { __typename?: 'Query' } & {
   twilioToken?: Maybe<{ __typename?: 'TwilioAuthToken' } & Pick<TwilioAuthToken, 'token'>>;
@@ -188,6 +240,9 @@ export const LoginDocument = gql`
   mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
+      user {
+        role
+      }
     }
   }
 `;
@@ -229,12 +284,65 @@ export type LoginMutationOptions = ApolloReactCommon.BaseMutationOptions<
   LoginMutation,
   LoginMutationVariables
 >;
+export const CreateMeetingMutationDocument = gql`
+  mutation createMeetingMutation($data: MeetingCreateInput!) {
+    createMeetingMutation(data: $data) {
+      id
+      name
+      reasonForVisit
+    }
+  }
+`;
+export type CreateMeetingMutationMutationFn = ApolloReactCommon.MutationFunction<
+  CreateMeetingMutationMutation,
+  CreateMeetingMutationMutationVariables
+>;
+
+/**
+ * __useCreateMeetingMutationMutation__
+ *
+ * To run a mutation, you first call `useCreateMeetingMutationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMeetingMutationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMeetingMutationMutation, { data, loading, error }] = useCreateMeetingMutationMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateMeetingMutationMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    CreateMeetingMutationMutation,
+    CreateMeetingMutationMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    CreateMeetingMutationMutation,
+    CreateMeetingMutationMutationVariables
+  >(CreateMeetingMutationDocument, baseOptions);
+}
+
+export type CreateMeetingMutationMutationHookResult = ReturnType<
+  typeof useCreateMeetingMutationMutation
+>;
+export type CreateMeetingMutationMutationResult =
+  ApolloReactCommon.MutationResult<CreateMeetingMutationMutation>;
+export type CreateMeetingMutationMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CreateMeetingMutationMutation,
+  CreateMeetingMutationMutationVariables
+>;
 export const SignupDocument = gql`
   mutation signup($data: SignupInput!) {
     signup(data: $data) {
       token
       user {
         id
+        role
       }
     }
   }
@@ -316,8 +424,8 @@ export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = ApolloReactCommon.QueryResult<MeQuery, MeQueryVariables>;
 export const TwilioTokenDocument = gql`
-  query twilioToken {
-    twilioToken {
+  query twilioToken($meetingId: String!) {
+    twilioToken(meetingId: $meetingId) {
       token
     }
   }
@@ -335,6 +443,7 @@ export const TwilioTokenDocument = gql`
  * @example
  * const { data, loading, error } = useTwilioTokenQuery({
  *   variables: {
+ *      meetingId: // value for 'meetingId'
  *   },
  * });
  */

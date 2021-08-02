@@ -25,6 +25,9 @@ export const LOGIN_MUTATION = gql`
   mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
+      user {
+        role
+      }
     }
   }
 `;
@@ -46,7 +49,12 @@ export function LoginForm() {
       setIsLoading(true);
       const { data } = await login({ variables: formData });
       await loginUser(data.login.token);
-      await router.replace('/');
+
+      if (data.login.user.role === 'PROVIDER') {
+        router.replace('/Provider');
+      } else {
+        router.replace('/Patient');
+      }
     } catch (e) {
       setErrorsFromGraphQLErrors(setError, e.graphQLErrors);
       setIsLoading(false);

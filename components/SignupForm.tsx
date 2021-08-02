@@ -28,6 +28,7 @@ export const SIGNUP_MUTATION = gql`
       token
       user {
         id
+        role
       }
     }
   }
@@ -54,7 +55,11 @@ export function SignupForm() {
 
       await login(data.signup.token);
 
-      router.replace('/');
+      if (data.signup.user.role === 'PROVIDER') {
+        router.replace('/Provider');
+      } else {
+        router.replace('/Patient');
+      }
     } catch (e) {
       setErrorsFromGraphQLErrors(setError, e.graphQLErrors);
     } finally {

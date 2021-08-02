@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { gql } from '@apollo/client';
 
 import { cookies } from '../lib/cookies';
@@ -14,8 +14,8 @@ const TwilioContext = createContext<TwilioContextObject>({});
 TwilioContext.displayName = 'TwilioContext';
 
 export const TWILIO_TOKEN_QUERY = gql`
-  query twilioToken {
-    twilioToken {
+  query twilioToken($meetingId: String!) {
+    twilioToken(meetingId: $meetingId) {
       token
     }
   }
@@ -25,10 +25,6 @@ function TwilioProvider({ ...props }: Props) {
   const [loadTwilioToken, { called, data, loading, refetch }] = useTwilioTokenLazyQuery();
   const token = data?.twilioToken?.token;
   // Load current token if there's an item in local storage
-  useEffect(() => {
-    if (called) return;
-    loadTwilioToken();
-  }, [loadTwilioToken, called]);
 
   if (loading) {
     return <FullPageSpinner />;

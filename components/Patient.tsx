@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormControl, Input, Button, FormLabel, Stack } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/router';
 
 import { useMeeting } from '../context/meetings';
 
@@ -16,15 +15,12 @@ export function Patient() {
     handleCreateMeeting,
   } = useMeeting();
 
-  const router = useRouter();
-
   /**
    * Submits the meeting request form
    * @param formData the data passed from the form hook
    */
   async function handleSubmitMeeting(formData) {
     await handleCreateMeeting(formData, setError);
-    await router.replace('/video');
   }
 
   return (

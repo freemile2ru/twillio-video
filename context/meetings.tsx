@@ -1,7 +1,6 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { gql } from '@apollo/client';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import {
   useCreateMeetingMutation,
@@ -55,6 +54,7 @@ function MeetingProvider({ ...props }: Props) {
   const [loadMeetings, { data }] = useMeetingsLazyQuery();
   const [createMeeting] = useCreateMeetingMutation();
   const [joinMeeting] = useJoinMeetingMutation();
+  const router = useRouter();
 
   // Load current token if there's an item in local storage
 
@@ -73,6 +73,7 @@ function MeetingProvider({ ...props }: Props) {
       setLoading(true);
       const { data } = await createMeeting({ variables: formData });
       setMeeting(data.createMeeting.id);
+      await router.replace('/video');
     } catch (e) {
       setErrorsFromGraphQLErrors(setError, e.graphQLErrors);
     }
@@ -85,6 +86,7 @@ function MeetingProvider({ ...props }: Props) {
       setLoading(true);
       const { data } = await joinMeeting({ variables: { data: { id: meetingId } } });
       setMeeting(data.joinMeeting.id);
+      await router.replace('/video');
     } catch (e) {
       setErrorsFromGraphQLErrors(setError, e.graphQLErrors);
     }

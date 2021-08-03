@@ -206,8 +206,8 @@ export interface NexusGenFieldTypes {
   };
   Mutation: {
     // field return type
-    createMeetingMutation: NexusGenRootTypes['Meeting'] | null; // Meeting
-    joinMeetingMutation: NexusGenRootTypes['Meeting'] | null; // Meeting
+    createMeeting: NexusGenRootTypes['Meeting'] | null; // Meeting
+    joinMeeting: NexusGenRootTypes['Meeting'] | null; // Meeting
     login: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     signup: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
   };
@@ -260,8 +260,8 @@ export interface NexusGenFieldTypeNames {
   };
   Mutation: {
     // field return type name
-    createMeetingMutation: 'Meeting';
-    joinMeetingMutation: 'Meeting';
+    createMeeting: 'Meeting';
+    joinMeeting: 'Meeting';
     login: 'AuthPayload';
     signup: 'AuthPayload';
   };
@@ -298,11 +298,11 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
-    createMeetingMutation: {
+    createMeeting: {
       // args
       data: NexusGenInputs['MeetingCreateInput']; // MeetingCreateInput!
     };
-    joinMeetingMutation: {
+    joinMeeting: {
       // args
       data: NexusGenInputs['JoinMeetingInput']; // JoinMeetingInput!
     };

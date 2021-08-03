@@ -4,6 +4,7 @@ import { ApolloProvider } from '@apollo/client';
 
 import { AuthProvider } from '../context/auth';
 import { TwilioProvider } from '../context/twilio';
+import { MeetingProvider } from '../context/meetings';
 import { createApolloClient } from '../lib/apolloClient';
 import defaultTheme from '../chakra';
 
@@ -22,9 +23,11 @@ export function AllProviders({
       <ChakraProvider theme={theme}>
         <AuthProvider>
           <TwilioProvider>
-            <CSSReset />
+            <MeetingProvider>
+              <CSSReset />
 
-            {children}
+              {children}
+            </MeetingProvider>
           </TwilioProvider>
         </AuthProvider>
       </ChakraProvider>

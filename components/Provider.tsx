@@ -4,6 +4,7 @@ import { Heading, Center } from '@chakra-ui/react';
 /** Description of component */
 export function Provider() {
   const message = 'Hola! Provider Created!';
+  //const [meetin, { called, data, loading, refetch }] = useMeetingsLazyQuery();
 
   return (
     <Center bg="red.300" color="white" padding={{ base: 16, lg: 24 }}>

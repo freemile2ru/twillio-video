@@ -47,7 +47,7 @@ export const MeetingQueries = extendType({
 export const MeetingMutations = extendType({
   type: 'Mutation',
   definition: (t) => {
-    t.field('createMeetingMutation', {
+    t.field('createMeeting', {
       type: 'Meeting',
       description: 'Patient Initialize/ request for a meeting ',
       args: {
@@ -77,7 +77,7 @@ export const MeetingMutations = extendType({
       },
     });
 
-    t.field('joinMeetingMutation', {
+    t.field('joinMeeting', {
       type: 'Meeting',
       description: 'Patient Initialize/ request for a meeting ',
       args: {

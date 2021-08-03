@@ -1,45 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FormControl, Input, Button, FormLabel, Stack } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import { gql } from '@apollo/client';
 import { useRouter } from 'next/router';
 
-import { setErrorsFromGraphQLErrors } from '../utils/setErrors';
-import { useCreateMeetingMutationMutation } from '../types';
+import { useMeeting } from '../context/meetings';
 
 import { ErrorText } from './ErrorText';
-
-export const CREATE_MEETING_MUTATION = gql`
-  mutation createMeetingMutation($data: MeetingCreateInput!) {
-    createMeetingMutation(data: $data) {
-      id
-      name
-      reasonForVisit
-    }
-  }
-`;
 
 /** Description of component */
 export function Patient() {
   const { register, handleSubmit, errors, setError } = useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const [createMeetingMutation] = useCreateMeetingMutationMutation();
+
+  const {
+    state: { loading },
+    handleCreateMeeting,
+  } = useMeeting();
+
   const router = useRouter();
 
   /**
-   * Submits the login form
+   * Submits the meeting request form
    * @param formData the data passed from the form hook
    */
   async function handleSubmitMeeting(formData) {
-    try {
-      setIsLoading(true);
-      const { data } = await createMeetingMutation({ variables: formData });
-      window.localStorage.setItem('meetingId', data.createMeetingMutation.id);
-      await router.replace('/video');
-    } catch (e) {
-      setErrorsFromGraphQLErrors(setError, e.graphQLErrors);
-      setIsLoading(false);
-    }
+    await handleCreateMeeting(formData, setError);
+    await router.replace('/video');
   }
 
   return (
@@ -74,7 +59,7 @@ export function Patient() {
         type="submit"
         marginTop={8}
         width="full"
-        isLoading={isLoading}
+        isLoading={loading}
         onClick={handleSubmit(handleSubmitMeeting)}
       >
         Submit

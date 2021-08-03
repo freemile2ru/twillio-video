@@ -64,12 +64,12 @@ type Mutation {
   """
   Patient Initialize/ request for a meeting
   """
-  createMeetingMutation(data: MeetingCreateInput!): Meeting
+  createMeeting(data: MeetingCreateInput!): Meeting
 
   """
   Patient Initialize/ request for a meeting
   """
-  joinMeetingMutation(data: JoinMeetingInput!): Meeting
+  joinMeeting(data: JoinMeetingInput!): Meeting
 
   """
   Login to an existing account

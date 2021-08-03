@@ -6,10 +6,18 @@ import { FiX } from 'react-icons/fi';
 
 import { Arrow } from './Arrow';
 import { Participant } from './Participant';
+import { WaitingRoom } from './WaitingRoom';
 
 /** Description of component */
-export function Room({ room, returnToLobby }) {
-  const [remoteParticipants, setRemoteParticipants] = useState(
+export function Room({
+  room,
+  setAudioEnabled,
+  setVideoEnabled,
+  audioEnabled,
+  videoEnabled,
+  returnToLobby,
+}) {
+  const [remoteParticipants, setRemoteParticipants] = useState<any>(
     Array.from(room.participants.values())
   );
 
@@ -63,35 +71,53 @@ export function Room({ room, returnToLobby }) {
 
   return (
     <div className="room">
-      <ScrollMenu LeftArrow={LeftArrow} RightArrow={RightArrow}>
-        <Participant
-          localParticipant={true}
-          isActive={activeParticipant.identity === room.localParticipant.identity}
-          participant={room.localParticipant}
-          onDoubleClick={() => setActiveParticipant(room.localParticipant)}
-        >
-          <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />
-        </Participant>
+      {!remoteParticipants.length ? (
+        <WaitingRoom />
+      ) : (
+        <>
+          <ScrollMenu LeftArrow={LeftArrow} RightArrow={RightArrow}>
+            <Participant
+              localParticipant={true}
+              isActive={activeParticipant.identity === room.localParticipant.identity}
+              participant={room.localParticipant}
+              onDoubleClick={() => setActiveParticipant(room.localParticipant)}
+              audioEnabled={audioEnabled}
+              videoEnabled={videoEnabled}
+              setAudioEnabled={setAudioEnabled}
+              setVideoEnabled={setVideoEnabled}
+            >
+              <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />
+            </Participant>
 
-        {remoteParticipants.map((participant, index) => (
+            {remoteParticipants.map((participant, index) => (
+              <Participant
+                key={index}
+                isActive={activeParticipant.identity === participant.identity}
+                participant={participant}
+                onDoubleClick={() => setActiveParticipant(participant)}
+                audioEnabled={audioEnabled}
+                videoEnabled={videoEnabled}
+                setAudioEnabled={setAudioEnabled}
+                setVideoEnabled={setVideoEnabled}
+              />
+            ))}
+          </ScrollMenu>
+
           <Participant
-            key={index}
-            isActive={activeParticipant.identity === participant.identity}
-            participant={participant}
-            onDoubleClick={() => setActiveParticipant(participant)}
-          />
-        ))}
-      </ScrollMenu>
-
-      <Participant
-        localParticipant={activeParticipant.identity === room.localParticipant.identity}
-        activeWindow={true}
-        participant={activeParticipant}
-      >
-        {activeParticipant.identity === room.localParticipant.identity && (
-          <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />
-        )}
-      </Participant>
+            localParticipant={activeParticipant.identity === room.localParticipant.identity}
+            activeWindow={true}
+            participant={activeParticipant}
+            audioEnabled={audioEnabled}
+            videoEnabled={videoEnabled}
+            setAudioEnabled={setAudioEnabled}
+            setVideoEnabled={setVideoEnabled}
+          >
+            {activeParticipant.identity === room.localParticipant.identity && (
+              <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />
+            )}
+          </Participant>
+        </>
+      )}
     </div>
   );
 }

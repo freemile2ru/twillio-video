@@ -125,7 +125,7 @@ interface Props {
 export interface MeetingContextObject {
   state?: {
     meetings: Meeting[];
-    meeting: Meeting;
+    meeting: string;
     loading: boolean;
   };
   fetchMeetingRequests?: () => any;

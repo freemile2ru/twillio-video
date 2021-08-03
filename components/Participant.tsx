@@ -12,19 +12,15 @@ export function Participant({
   activeWindow = false,
   onDoubleClick = () => null,
   isActive = false,
+  setAudioEnabled,
+  setVideoEnabled,
+  audioEnabled,
+  videoEnabled,
 }) {
   const existingPublications = Array.from(participant.tracks.values());
   const existingTracks = existingPublications.map((publication: any) => publication.track);
   const nonNullTracks = existingTracks.filter((track) => track !== null);
   const [tracks, setTracks] = useState(nonNullTracks);
-
-  const [audioEnabled, setAudioEnabled] = useState(
-    nonNullTracks.find((x) => x.kind === 'audio')?.isEnabled || false
-  );
-
-  const [videoEnabled, setVideoEnabled] = useState(
-    nonNullTracks.find((x) => x.kind === 'video')?.isEnabled || false
-  );
 
   useEffect(() => {
     if (!localParticipant) {
@@ -106,7 +102,7 @@ export function Participant({
 
       {/* {!videoEnabled && ( */}
       <Text as="h2" style={styles.identity} fontSize="lg">
-        {participant.identity}
+        {participant?.identity}
       </Text>
       {/* )} */}
       <div style={styles.icons}>

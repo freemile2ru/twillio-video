@@ -1,22 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Heading, Button } from '@chakra-ui/react';
-import { connect } from 'twilio-video';
+import { Heading } from '@chakra-ui/react';
+import { createLocalTracks, connect } from 'twilio-video';
 
 import { useTwilio } from '../context/twilio';
 import { Room } from '../components/Room';
-import { useAuth } from '../context/auth';
+import { useMeeting } from '../context/meetings';
+import { Preview } from '../components/Preview';
+import { FullPageSpinner } from '../components/FullPageSpinner';
 
 function VideoPage() {
   const [room, setRoom] = useState(null);
-  const { token } = useTwilio();
-  const { user } = useAuth();
+  const [join, setJoin] = useState(false);
+  const [twilioToken, setTwilioToken] = useState(null);
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+  const [localTracks, setLocalTracks] = useState([]);
 
-  const joinRoom = async () => {
+  const {
+    state: { meeting: meetingId, loading },
+  } = useMeeting();
+
+  const { token, setToken } = useTwilio();
+
+  useEffect(() => {
+    createLocalTracks({
+      audio: true,
+      video: true,
+    }).then((localTracks) => {
+      setLocalTracks(localTracks);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (token && token !== twilioToken) {
+      setTwilioToken(token);
+      setJoin(true);
+      joinRoom(token);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, twilioToken]);
+
+  const handleJoin = () => {
+    setToken(meetingId);
+  };
+
+  if (loading) {
+    return <FullPageSpinner />;
+  }
+
+  const joinRoom = async (token) => {
     try {
       const room = await connect(token, {
-        audio: true,
-        video: true,
+        audio: audioEnabled,
+        video: videoEnabled,
       });
 
       setRoom(room);
@@ -37,15 +74,31 @@ function VideoPage() {
 
       <Heading size="lg">I am video page</Heading>
       <div style={styles.app}>
-        {!room ? (
-          <div style={styles.lobby}>
-            Hello {`${user && user.email} `}
-            <Button onClick={joinRoom} disabled={!token}>
-              Join Room
-            </Button>
-          </div>
+        {!join || !room ? (
+          <>
+            <Preview
+              participant={{
+                tracks: localTracks,
+                audioTracks: localTracks.map((x) => x.kind === 'audio'),
+                videoTracks: localTracks.map((x) => x.kind === 'video'),
+                identity: 'Me',
+              }}
+              audioEnabled={audioEnabled}
+              videoEnabled={videoEnabled}
+              setAudioEnabled={setAudioEnabled}
+              setVideoEnabled={setVideoEnabled}
+              handleJoin={handleJoin}
+            />
+          </>
         ) : (
-          <Room returnToLobby={returnToLobby} room={room} />
+          <Room
+            audioEnabled={audioEnabled}
+            videoEnabled={videoEnabled}
+            setAudioEnabled={setAudioEnabled}
+            setVideoEnabled={setVideoEnabled}
+            room={room}
+            returnToLobby={returnToLobby}
+          />
         )}
       </div>
     </>

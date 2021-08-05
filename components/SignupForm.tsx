@@ -56,9 +56,9 @@ export function SignupForm() {
       await login(data.signup.token);
 
       if (data.signup.user.role === 'PROVIDER') {
-        router.replace('/Provider');
+        router.replace('/provider');
       } else {
-        router.replace('/Patient');
+        router.replace('/patient');
       }
     } catch (e) {
       setErrorsFromGraphQLErrors(setError, e.graphQLErrors);

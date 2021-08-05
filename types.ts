@@ -100,6 +100,8 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Returns active meetings */
+  activeMeeting?: Maybe<Meeting>;
   /** Returns the currently logged in user */
   me?: Maybe<User>;
   /** Returns available meetings */
@@ -215,7 +217,7 @@ export type SignupMutation = { __typename?: 'Mutation' } & {
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
 export type MeQuery = { __typename?: 'Query' } & {
-  me?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'email'>>;
+  me?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'email' | 'role'>>;
 };
 
 export type JoinMeetingMutationVariables = Exact<{
@@ -232,7 +234,7 @@ export type MeetingsQuery = { __typename?: 'Query' } & {
   meetings?: Maybe<
     Array<
       Maybe<
-        { __typename?: 'Meeting' } & Pick<Meeting, 'name' | 'reasonForVisit'> & {
+        { __typename?: 'Meeting' } & Pick<Meeting, 'id' | 'name' | 'reasonForVisit'> & {
             users: Array<Maybe<{ __typename?: 'User' } & Pick<User, 'id'>>>;
           }
       >
@@ -248,6 +250,12 @@ export type CreateMeetingMutation = { __typename?: 'Mutation' } & {
   createMeeting?: Maybe<
     { __typename?: 'Meeting' } & Pick<Meeting, 'id' | 'name' | 'reasonForVisit'>
   >;
+};
+
+export type ActiveMeetingQueryVariables = Exact<{ [key: string]: never }>;
+
+export type ActiveMeetingQuery = { __typename?: 'Query' } & {
+  activeMeeting?: Maybe<{ __typename?: 'Meeting' } & Pick<Meeting, 'id'>>;
 };
 
 export type TwilioTokenQueryVariables = Exact<{
@@ -359,6 +367,7 @@ export const MeDocument = gql`
     me {
       id
       email
+      role
     }
   }
 `;
@@ -445,6 +454,7 @@ export type JoinMeetingMutationOptions = ApolloReactCommon.BaseMutationOptions<
 export const MeetingsDocument = gql`
   query meetings {
     meetings {
+      id
       name
       reasonForVisit
       users {
@@ -541,6 +551,56 @@ export type CreateMeetingMutationResult = ApolloReactCommon.MutationResult<Creat
 export type CreateMeetingMutationOptions = ApolloReactCommon.BaseMutationOptions<
   CreateMeetingMutation,
   CreateMeetingMutationVariables
+>;
+export const ActiveMeetingDocument = gql`
+  query activeMeeting {
+    activeMeeting {
+      id
+    }
+  }
+`;
+
+/**
+ * __useActiveMeetingQuery__
+ *
+ * To run a query within a React component, call `useActiveMeetingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useActiveMeetingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useActiveMeetingQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useActiveMeetingQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<ActiveMeetingQuery, ActiveMeetingQueryVariables>
+) {
+  return ApolloReactHooks.useQuery<ActiveMeetingQuery, ActiveMeetingQueryVariables>(
+    ActiveMeetingDocument,
+    baseOptions
+  );
+}
+
+export function useActiveMeetingLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    ActiveMeetingQuery,
+    ActiveMeetingQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<ActiveMeetingQuery, ActiveMeetingQueryVariables>(
+    ActiveMeetingDocument,
+    baseOptions
+  );
+}
+
+export type ActiveMeetingQueryHookResult = ReturnType<typeof useActiveMeetingQuery>;
+export type ActiveMeetingLazyQueryHookResult = ReturnType<typeof useActiveMeetingLazyQuery>;
+export type ActiveMeetingQueryResult = ApolloReactCommon.QueryResult<
+  ActiveMeetingQuery,
+  ActiveMeetingQueryVariables
 >;
 export const TwilioTokenDocument = gql`
   query twilioToken($meetingId: String!) {

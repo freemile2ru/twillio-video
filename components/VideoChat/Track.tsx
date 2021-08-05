@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 export function Track({ track }) {
   const trackRef = useRef();
   useEffect(() => {
-    if (track && trackRef.current) {
+    if (track && trackRef.current && track?.attach) {
       const child = track.attach();
       trackRef?.current?.appendChild(child);
     }

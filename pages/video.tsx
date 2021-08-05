@@ -4,9 +4,9 @@ import { Heading } from '@chakra-ui/react';
 import { createLocalTracks, connect } from 'twilio-video';
 
 import { useTwilio } from '../context/twilio';
-import { Room } from '../components/Room';
+import { Room } from '../components/VideoChat/Room';
 import { useMeeting } from '../context/meetings';
-import { Preview } from '../components/Preview';
+import { Preview } from '../components/VideoChat/Preview';
 import { FullPageSpinner } from '../components/FullPageSpinner';
 
 function VideoPage() {
@@ -57,9 +57,7 @@ function VideoPage() {
       });
 
       setRoom(room);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const returnToLobby = () => {
@@ -76,19 +74,23 @@ function VideoPage() {
       <div style={styles.app}>
         {!join || !room ? (
           <>
-            <Preview
-              participant={{
-                tracks: localTracks,
-                audioTracks: localTracks.map((x) => x.kind === 'audio'),
-                videoTracks: localTracks.map((x) => x.kind === 'video'),
-                identity: 'Me',
-              }}
-              audioEnabled={audioEnabled}
-              videoEnabled={videoEnabled}
-              setAudioEnabled={setAudioEnabled}
-              setVideoEnabled={setVideoEnabled}
-              handleJoin={handleJoin}
-            />
+            {!localTracks.length ? (
+              <div></div>
+            ) : (
+              <Preview
+                participant={{
+                  tracks: localTracks,
+                  audioTracks: localTracks.filter((x) => x.kind === 'audio'),
+                  videoTracks: localTracks.filter((x) => x.kind === 'video'),
+                  identity: 'Me',
+                }}
+                audioEnabled={audioEnabled}
+                videoEnabled={videoEnabled}
+                setAudioEnabled={setAudioEnabled}
+                setVideoEnabled={setVideoEnabled}
+                handleJoin={handleJoin}
+              />
+            )}
           </>
         ) : (
           <Room

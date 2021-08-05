@@ -51,9 +51,9 @@ export function LoginForm() {
       await loginUser(data.login.token);
 
       if (data.login.user.role === 'PROVIDER') {
-        router.replace('/Provider');
+        router.replace('/provider');
       } else {
-        router.replace('/Patient');
+        router.replace('/patient');
       }
     } catch (e) {
       setErrorsFromGraphQLErrors(setError, e.graphQLErrors);

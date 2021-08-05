@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { Heading } from '@chakra-ui/react';
 
-import { Provider } from '../components/Provider';
+import { Provider } from '../components/VideoChat/Provider';
 
 function ProviderPage() {
   return (

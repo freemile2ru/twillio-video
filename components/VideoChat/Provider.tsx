@@ -10,22 +10,22 @@ import {
   Button,
 } from '@chakra-ui/react';
 
-import { useMeeting } from '../context/meetings';
-
-import { ErrorText } from './ErrorText';
-import { FullPageSpinner } from './FullPageSpinner';
+import { useMeeting } from '../../context/meetings';
+import { ErrorText } from '../ErrorText';
+import { FullPageSpinner } from '../FullPageSpinner';
 
 /** Description of component */
 export function Provider() {
-  const [error, setError] = useState({});
+  const [error, setError] = useState();
 
   const {
-    state: { loading, meetings },
+    state: { loading, meetings, called },
     handleJoinMeeting,
     fetchMeetingRequests,
   } = useMeeting();
 
   useEffect(() => {
+    if (called) return;
     fetchMeetingRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

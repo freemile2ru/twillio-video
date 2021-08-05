@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heading, Center, Button } from '@chakra-ui/react';
+import { Heading, Button, Container } from '@chakra-ui/react';
 
 import { Participant } from './Participant';
 
@@ -15,7 +15,7 @@ export function Preview({
   const message = 'Preview Your Camera and Audio';
 
   return (
-    <Center bg="red.300" color="white" padding={{ base: 16, lg: 24 }}>
+    <Container bg="red.300" color="white" padding={{ base: 16, lg: 24 }}>
       <Heading>{message}</Heading>
       <Participant
         localParticipant={true}
@@ -27,7 +27,9 @@ export function Preview({
         audioEnabled={audioEnabled}
         videoEnabled={videoEnabled}
       />
-      <Button onClick={handleJoin}>Join Room</Button>
-    </Center>
+      <Button onClick={handleJoin} color={'black'}>
+        Join Room
+      </Button>
+    </Container>
   );
 }

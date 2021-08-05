@@ -2,9 +2,8 @@ import React from 'react';
 import { FormControl, Input, Button, FormLabel, Stack } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 
-import { useMeeting } from '../context/meetings';
-
-import { ErrorText } from './ErrorText';
+import { useMeeting } from '../../context/meetings';
+import { ErrorText } from '../ErrorText';
 
 /** Description of component */
 export function Patient() {

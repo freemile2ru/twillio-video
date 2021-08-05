@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { Heading } from '@chakra-ui/react';
 
-import { Patient } from '../components/Patient';
+import { Patient } from '../components/VideoChat/Patient';
 
 function PatientPage() {
   return (

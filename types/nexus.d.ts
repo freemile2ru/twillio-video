@@ -223,6 +223,7 @@ export interface NexusGenFieldTypes {
   };
   Query: {
     // field return type
+    activeMeeting: NexusGenRootTypes['Meeting'] | null; // Meeting
     me: NexusGenRootTypes['User'] | null; // User
     meetings: Array<NexusGenRootTypes['Meeting'] | null> | null; // [Meeting]
     twilioToken: NexusGenRootTypes['TwilioAuthToken'] | null; // TwilioAuthToken
@@ -277,6 +278,7 @@ export interface NexusGenFieldTypeNames {
   };
   Query: {
     // field return type name
+    activeMeeting: 'Meeting';
     me: 'User';
     meetings: 'Meeting';
     twilioToken: 'TwilioAuthToken';

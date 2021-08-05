@@ -18,6 +18,7 @@ export const ME_QUERY = gql`
     me {
       id
       email
+      role
     }
   }
 `;
@@ -26,6 +27,7 @@ function AuthProvider({ ...props }: Props) {
   const [tokenLoaded, setTokenLoaded] = useState(true);
   const [loadCurrentUser, { called, data, loading, refetch }] = useMeLazyQuery();
   const user = data?.me;
+  const isProvider = user?.role === 'PROVIDER';
 
   // Load current user if there's an item in local storage
   useEffect(() => {
@@ -66,7 +68,7 @@ function AuthProvider({ ...props }: Props) {
     return fetchUserData();
   }
 
-  const value = { user, login, logout };
+  const value = { user, isProvider, login, logout };
   return <AuthContext.Provider value={value} {...props} />;
 }
 
@@ -80,6 +82,7 @@ interface Props {
 
 export interface AuthContextObject {
   user?: Partial<User>;
+  isProvider?: boolean;
   login?: (token?: string) => any;
   logout?: () => any;
 }

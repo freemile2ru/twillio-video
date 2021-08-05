@@ -11,7 +11,10 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
+import { useAuth } from '../context/auth';
+
 export function Nav() {
+  const { isProvider, user } = useAuth();
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === 'base';
 
@@ -23,17 +26,22 @@ export function Nav() {
 
       <MenuList width="full">
         <MenuItem>
-          <NextLink href="/">
-            <Link href="">Link 1</Link>
-          </NextLink>
+          <NextLink href="/">Home</NextLink>
         </MenuItem>
+        {!isProvider && user && (
+          <MenuItem>
+            <NextLink href="/patient">Patient</NextLink>
+          </MenuItem>
+        )}
+
+        {isProvider && user && (
+          <MenuItem>
+            <Link href="/provider">Provider</Link>
+          </MenuItem>
+        )}
 
         <MenuItem>
-          <Link href="/">Link 2</Link>
-        </MenuItem>
-
-        <MenuItem>
-          <Link href="/">Link 3</Link>
+          <Link href="/">Video</Link>
         </MenuItem>
 
         <MenuItem>
@@ -46,11 +54,12 @@ export function Nav() {
   ) : (
     <Stack as="nav" direction="row" ml="auto" alignItems="center" fontSize="md" spacing={8}>
       <NextLink href="/">
-        <Link href="">Link 1</Link>
+        <Link href="">Home</Link>
       </NextLink>
 
-      <Link href="/#features">Link 2</Link>
-      <Link href="/#tech">Link 3</Link>
+      {!isProvider && user && <Link href="/patient">Patient</Link>}
+      {isProvider && user && <Link href="/provider">Provider</Link>}
+      <Link href="/video">Video</Link>
       <Link href="https://github.com/echobind/" isExternal>
         External
       </Link>

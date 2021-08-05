@@ -1,6 +1,6 @@
 import { objectType, extendType, arg, nonNull, inputObjectType } from 'nexus';
 
-// import { isAdmin } from '../services/permissions';
+import { isAdmin } from '../../services/permissions';
 
 // Meeting Type
 export const Meeting = objectType({
@@ -26,7 +26,7 @@ export const MeetingQueries = extendType({
     // List Meetings Query
     t.list.field('meetings', {
       type: 'Meeting',
-      authorize: (_root, _args, ctx) => !!ctx.user,
+      authorize: (_root, _args, ctx) => !!ctx.user && isAdmin(ctx.user),
       description: 'Returns available meetings',
       resolve: (_root, args, ctx) => {
         return ctx.prisma.meeting.findMany({
@@ -38,6 +38,27 @@ export const MeetingQueries = extendType({
           },
         });
         // TODO
+      },
+    });
+
+    t.field('activeMeeting', {
+      type: 'Meeting',
+      authorize: (_root, _args, ctx) => !!ctx.user,
+      description: 'Returns active meetings',
+      resolve: (_root, args, ctx) => {
+        return ctx.prisma.meeting.findFirst({
+          where: {
+            completed: false,
+            users: {
+              some: {
+                id: ctx.user.id,
+              },
+            },
+          },
+          include: {
+            users: true,
+          },
+        });
       },
     });
   },
@@ -57,20 +78,14 @@ export const MeetingMutations = extendType({
       resolve: async (_root, args, ctx) => {
         const { name, reasonForVisit } = args.data;
 
-        const meeting = await ctx.prisma.meeting.create({
+        return await ctx.prisma.meeting.create({
           data: {
             name,
             reasonForVisit,
-          },
-        });
-
-        return await ctx.prisma.meeting.update({
-          where: {
-            id: meeting.id,
-          },
-          data: {
             users: {
-              set: [{ id: ctx.user.id }],
+              connect: {
+                id: ctx.user.id,
+              },
             },
           },
         });
@@ -93,7 +108,9 @@ export const MeetingMutations = extendType({
           },
           data: {
             users: {
-              set: [{ id: ctx.user.id }],
+              connect: {
+                id: ctx.user.id,
+              },
             },
           },
         });

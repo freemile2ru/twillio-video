@@ -18,10 +18,13 @@ export function Participant({
   videoEnabled,
 }) {
   const existingPublications = Array.from(participant.tracks.values());
-  const existingTracks = existingPublications.map((publication: any) => publication.track);
+
+  const existingTracks = existingPublications.map(
+    (publication: any) => publication.track || publication
+  );
+
   const nonNullTracks = existingTracks.filter((track) => track !== null);
   const [tracks, setTracks] = useState(nonNullTracks);
-
   useEffect(() => {
     if (!localParticipant) {
       participant.on('trackSubscribed', (track) => addTrack(track));
@@ -61,11 +64,11 @@ export function Participant({
   const setAudioMuted = () => {
     if (audioEnabled) {
       participant.audioTracks.forEach((publication) => {
-        publication.track.disable();
+        publication.disable ? publication.disable() : publication.track.disable();
       });
     } else {
       participant.audioTracks.forEach((publication) => {
-        publication.track.enable();
+        publication.enable ? publication.enable() : publication.track.enable();
       });
     }
 
@@ -76,11 +79,11 @@ export function Participant({
     //loca
     if (videoEnabled) {
       participant.videoTracks.forEach((publication) => {
-        publication.track.disable();
+        publication.disable ? publication.disable() : publication.track.disable();
       });
     } else {
       participant.videoTracks.forEach((publication) => {
-        publication.track.enable();
+        publication.enable ? publication.enable() : publication.track.enable();
       });
     }
 

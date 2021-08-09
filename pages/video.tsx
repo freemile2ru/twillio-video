@@ -21,7 +21,7 @@ function VideoPage() {
     state: { meeting: meetingId, loading },
   } = useMeeting();
 
-  const { token, setToken } = useTwilio();
+  const { token, loading: tokenLoading, setToken } = useTwilio();
 
   useEffect(() => {
     createLocalTracks({
@@ -32,15 +32,12 @@ function VideoPage() {
     });
   }, []);
 
-  console.log('===render=>', audioEnabled, videoEnabled);
   useEffect(() => {
     if (token && token !== twilioToken) {
       setTwilioToken(token);
       setJoin(true);
 
       const joinRoom = async (token) => {
-        console.log('====>', audioEnabled, videoEnabled);
-
         try {
           const room = await connect(token, {
             audio: audioEnabled,
@@ -60,15 +57,13 @@ function VideoPage() {
     setToken(meetingId);
   };
 
-  if (loading) {
+  if (loading || tokenLoading) {
     return <FullPageSpinner />;
   }
 
   const returnToLobby = () => {
     setRoom(null);
   };
-
-  console.log('===room', room);
 
   return (
     <>
@@ -90,8 +85,6 @@ function VideoPage() {
                   videoTracks: localTracks.filter((x) => x.kind === 'video'),
                   identity: 'Me',
                 }}
-                audioEnabled={audioEnabled}
-                videoEnabled={videoEnabled}
                 setAudioEnabled={setAudioEnabled}
                 setVideoEnabled={setVideoEnabled}
                 handleJoin={handleJoin}
@@ -99,14 +92,7 @@ function VideoPage() {
             )}
           </>
         ) : (
-          <Room
-            audioEnabled={audioEnabled}
-            videoEnabled={videoEnabled}
-            setAudioEnabled={setAudioEnabled}
-            setVideoEnabled={setVideoEnabled}
-            room={room}
-            returnToLobby={returnToLobby}
-          />
+          <Room room={room} returnToLobby={returnToLobby} />
         )}
       </div>
     </>
@@ -117,7 +103,6 @@ const styles = {
   app: {
     padding: '.75vw',
     width: '100%',
-    boxSizing: 'border-box',
   },
   lobby: {
     marginTop: '100px',

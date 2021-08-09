@@ -12,5 +12,9 @@ export function Track({ track }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={trackRef}></div>;
+  return track.isEnabled || track.isTrackEnabled || track.kind === 'audio' ? (
+    <div ref={trackRef}></div>
+  ) : (
+    <div style={{ backgroundColor: 'black', width: '100%', height: '100%' }}></div>
+  );
 }

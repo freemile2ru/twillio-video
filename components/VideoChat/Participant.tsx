@@ -11,11 +11,10 @@ export function Participant({
   children = null,
   activeWindow = false,
   onDoubleClick = () => null,
+  previewWindow = false,
   isActive = false,
-  setAudioEnabled,
-  setVideoEnabled,
-  audioEnabled,
-  videoEnabled,
+  setAudioEnabled: setAudioEnabledCB,
+  setVideoEnabled: setVideoEnabledCB,
 }) {
   const existingPublications = Array.from(participant.tracks.values());
 
@@ -25,10 +24,31 @@ export function Participant({
 
   const nonNullTracks = existingTracks.filter((track) => track !== null);
   const [tracks, setTracks] = useState(nonNullTracks);
+  const videoTrack = tracks.find((x) => x.kind === 'video');
+  const audioTrack = tracks.find((x) => x.kind === 'audio');
+
+  const [audioEnabled, setAudioEnabled] = useState(
+    audioTrack && (audioTrack.isEnabled || audioTrack.isTrackEnabled)
+  );
+
+  const [videoEnabled, setVideoEnabled] = useState(
+    videoTrack && (videoTrack.isEnabled || videoTrack.isTrackEnabled)
+  );
+
   useEffect(() => {
     if (!localParticipant) {
       participant.on('trackSubscribed', (track) => addTrack(track));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const audioTrackObj = audioTrack.track || audioTrack;
+    const videoTrackObj = videoTrack.track || videoTrack;
+
+    [audioTrackObj, videoTrackObj].forEach((track) => {
+      setTrackListeners(track);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -41,6 +61,10 @@ export function Participant({
       setVideoEnabled(track.isEnabled);
     }
 
+    setTrackListeners(track);
+  };
+
+  const setTrackListeners = (track) => {
     track.on('disabled', () => {
       if (track.kind === 'audio') {
         setAudioEnabled(false);
@@ -58,9 +82,6 @@ export function Participant({
     });
   };
 
-  const videoTrack = tracks.find((x) => x.kind === 'video');
-  const audioTrack = tracks.find((x) => x.kind === 'audio');
-
   const setAudioMuted = () => {
     if (audioEnabled) {
       participant.audioTracks.forEach((publication) => {
@@ -73,6 +94,7 @@ export function Participant({
     }
 
     setAudioEnabled(!audioEnabled);
+    setVideoEnabledCB && setAudioEnabledCB(!audioEnabled);
   };
 
   const setVideoMuted = () => {
@@ -88,19 +110,26 @@ export function Participant({
     }
 
     setVideoEnabled(!videoEnabled);
+    setVideoEnabledCB && setVideoEnabledCB(!videoEnabled);
   };
 
   return (
     <div
       style={
-        activeWindow
-          ? styles.activeWindowParticipant
+        activeWindow || previewWindow
+          ? {
+              ...styles.activeWindowParticipant,
+              ...(!videoEnabled && { height: previewWindow ? '30vh' : '60vh' }),
+            }
           : { ...styles.participant, ...(isActive && { border: '5px solid yellow' }) }
       }
       onDoubleClick={onDoubleClick}
     >
       {tracks.map((track, index) => (
-        <Track key={index} track={track} />
+        <Track
+          key={(!!track.isEnabled || !!track.isTrackEnabled).toString() + index}
+          track={track}
+        />
       ))}
 
       {/* {!videoEnabled && ( */}

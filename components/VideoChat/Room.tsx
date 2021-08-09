@@ -9,14 +9,7 @@ import { Participant } from './Participant';
 import { WaitingRoom } from './WaitingRoom';
 
 /** Description of component */
-export function Room({
-  room,
-  setAudioEnabled,
-  setVideoEnabled,
-  audioEnabled,
-  videoEnabled,
-  returnToLobby,
-}) {
+export function Room({ room, returnToLobby }) {
   const [remoteParticipants, setRemoteParticipants] = useState<any>(
     Array.from(room.participants.values())
   );
@@ -81,10 +74,6 @@ export function Room({
               isActive={activeParticipant.identity === room.localParticipant.identity}
               participant={room.localParticipant}
               onDoubleClick={() => setActiveParticipant(room.localParticipant)}
-              audioEnabled={audioEnabled}
-              videoEnabled={videoEnabled}
-              setAudioEnabled={setAudioEnabled}
-              setVideoEnabled={setVideoEnabled}
             >
               <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />
             </Participant>
@@ -95,10 +84,6 @@ export function Room({
                 isActive={activeParticipant.identity === participant.identity}
                 participant={participant}
                 onDoubleClick={() => setActiveParticipant(participant)}
-                audioEnabled={audioEnabled}
-                videoEnabled={videoEnabled}
-                setAudioEnabled={setAudioEnabled}
-                setVideoEnabled={setVideoEnabled}
               />
             ))}
           </ScrollMenu>
@@ -106,11 +91,8 @@ export function Room({
           <Participant
             localParticipant={activeParticipant.identity === room.localParticipant.identity}
             activeWindow={true}
+            key={activeParticipant.identity}
             participant={activeParticipant}
-            audioEnabled={audioEnabled}
-            videoEnabled={videoEnabled}
-            setAudioEnabled={setAudioEnabled}
-            setVideoEnabled={setVideoEnabled}
           >
             {activeParticipant.identity === room.localParticipant.identity && (
               <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />

@@ -4,14 +4,7 @@ import { Heading, Button, Container } from '@chakra-ui/react';
 import { Participant } from './Participant';
 
 /** Description of component */
-export function Preview({
-  participant,
-  setAudioEnabled,
-  setVideoEnabled,
-  audioEnabled,
-  videoEnabled,
-  handleJoin,
-}) {
+export function Preview({ participant, setAudioEnabled, setVideoEnabled, handleJoin }) {
   const message = 'Preview Your Camera and Audio';
 
   return (
@@ -19,13 +12,11 @@ export function Preview({
       <Heading>{message}</Heading>
       <Participant
         localParticipant={true}
-        activeWindow={true}
         participant={participant}
+        previewWindow={true}
         onDoubleClick={() => null}
         setAudioEnabled={setAudioEnabled}
         setVideoEnabled={setVideoEnabled}
-        audioEnabled={audioEnabled}
-        videoEnabled={videoEnabled}
       />
       <Button onClick={handleJoin} color={'black'}>
         Join Room

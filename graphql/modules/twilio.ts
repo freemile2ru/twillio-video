@@ -37,7 +37,7 @@ export const TwilioQueries = extendType({
         });
 
         if (meeting && meeting.users.find((user) => user.id === ctx.user.id)) {
-          return { token: generateUserToken(ctx.user?.email) };
+          return { token: generateUserToken(ctx.user?.email, meeting.reasonForVisit) };
         }
 
         return {

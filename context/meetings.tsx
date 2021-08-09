@@ -84,6 +84,14 @@ function MeetingProvider({ ...props }: Props) {
     loadActiveMeetings();
   }, [activeMeetingCalled, loadActiveMeetings]);
 
+  useEffect(() => {
+    if (activeMeetingData) {
+      setMeeting(activeMeetingData.activeMeeting.id);
+      router.replace('/video');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMeetingData?.activeMeeting?.id]);
+
   if (loading) {
     return <FullPageSpinner />;
   }

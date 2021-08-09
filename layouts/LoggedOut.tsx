@@ -12,7 +12,7 @@ export function LoggedOutLayout({ children }) {
           <Logo />
 
           <NextLink href="/login" passHref>
-            <Button as="a" ml="auto" display={{ base: 'none', lg: 'inline-flex' }}>
+            <Button as="a" ml="auto">
               Login
             </Button>
           </NextLink>

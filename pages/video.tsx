@@ -32,14 +32,29 @@ function VideoPage() {
     });
   }, []);
 
+  console.log('===render=>', audioEnabled, videoEnabled);
   useEffect(() => {
     if (token && token !== twilioToken) {
       setTwilioToken(token);
       setJoin(true);
+
+      const joinRoom = async (token) => {
+        console.log('====>', audioEnabled, videoEnabled);
+
+        try {
+          const room = await connect(token, {
+            audio: audioEnabled,
+            video: videoEnabled,
+          });
+
+          setRoom(room);
+        } catch (err) {}
+      };
+
       joinRoom(token);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, twilioToken]);
+  }, [token, twilioToken, audioEnabled, videoEnabled]);
 
   const handleJoin = () => {
     setToken(meetingId);
@@ -49,20 +64,11 @@ function VideoPage() {
     return <FullPageSpinner />;
   }
 
-  const joinRoom = async (token) => {
-    try {
-      const room = await connect(token, {
-        audio: audioEnabled,
-        video: videoEnabled,
-      });
-
-      setRoom(room);
-    } catch (err) {}
-  };
-
   const returnToLobby = () => {
     setRoom(null);
   };
+
+  console.log('===room', room);
 
   return (
     <>

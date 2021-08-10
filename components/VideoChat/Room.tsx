@@ -15,6 +15,7 @@ export function Room({ room, returnToLobby }) {
   );
 
   const [activeParticipant, setActiveParticipant] = useState(room.localParticipant);
+  const [localParticipant, setLocalParticipant] = useState(room.localParticipant);
   useEffect(() => {
     room.on('participantConnected', (participant) => addParticipant(participant));
     room.on('participantDisconnected', (participant) => removeParticipant(participant));
@@ -62,6 +63,9 @@ export function Room({ room, returnToLobby }) {
     );
   };
 
+  const isActiveLocalParticipant: boolean =
+    activeParticipant.identity === localParticipant.identity;
+
   return (
     <div className="room">
       {!remoteParticipants.length ? (
@@ -71,9 +75,10 @@ export function Room({ room, returnToLobby }) {
           <ScrollMenu LeftArrow={LeftArrow} RightArrow={RightArrow}>
             <Participant
               localParticipant={true}
-              isActive={activeParticipant.identity === room.localParticipant.identity}
-              participant={room.localParticipant}
+              isActive={isActiveLocalParticipant}
+              participant={localParticipant}
               onDoubleClick={() => setActiveParticipant(room.localParticipant)}
+              setLocalParticipant={setLocalParticipant}
             >
               <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />
             </Participant>
@@ -89,12 +94,13 @@ export function Room({ room, returnToLobby }) {
           </ScrollMenu>
 
           <Participant
-            localParticipant={activeParticipant.identity === room.localParticipant.identity}
+            localParticipant={isActiveLocalParticipant}
             activeWindow={true}
             key={activeParticipant.identity}
-            participant={activeParticipant}
+            participant={isActiveLocalParticipant ? localParticipant : activeParticipant}
+            setLocalParticipant={setLocalParticipant}
           >
-            {activeParticipant.identity === room.localParticipant.identity && (
+            {isActiveLocalParticipant && (
               <Icon onClick={leaveRoom} as={FiX} w={8} h={6} color={'white'} />
             )}
           </Participant>

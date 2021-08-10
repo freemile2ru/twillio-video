@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FiMicOff, FiMic, FiVideo, FiVideoOff } from 'react-icons/fi';
 import { Icon, Text } from '@chakra-ui/react';
+import { createLocalAudioTrack, createLocalVideoTrack } from 'twilio-video';
+
+import { StylesDictionary } from '../../types/css';
 
 import { Track } from './Track';
 
@@ -13,17 +16,22 @@ export function Participant({
   onDoubleClick = () => null,
   previewWindow = false,
   isActive = false,
-  setAudioEnabled: setAudioEnabledCB,
-  setVideoEnabled: setVideoEnabledCB,
+  setAudioEnabled: setAudioEnabledCB = (state: boolean) => state,
+  setVideoEnabled: setVideoEnabledCB = (state: boolean) => state,
+  setLocalParticipant = null,
 }) {
-  const existingPublications = Array.from(participant.tracks.values());
+  const getNotNullTracks = (participant) => {
+    const existingPublications = Array.from(participant.tracks.values());
 
-  const existingTracks = existingPublications.map(
-    (publication: any) => publication.track || publication
-  );
+    const existingTracks = existingPublications.map(
+      (publication: any) => publication.track || publication
+    );
 
-  const nonNullTracks = existingTracks.filter((track) => track !== null);
-  const [tracks, setTracks] = useState(nonNullTracks);
+    const nonNullTracks = existingTracks.filter((track) => track !== null);
+    return nonNullTracks;
+  };
+
+  const [tracks, setTracks] = useState(getNotNullTracks(participant));
   const videoTrack = tracks.find((x) => x.kind === 'video');
   const audioTrack = tracks.find((x) => x.kind === 'audio');
 
@@ -42,11 +50,24 @@ export function Participant({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const audioTrackObj = audioTrack.track || audioTrack;
-    const videoTrackObj = videoTrack.track || videoTrack;
+  console.log('====>', getNotNullTracks(participant).length, activeWindow);
 
-    [audioTrackObj, videoTrackObj].forEach((track) => {
+  useEffect(() => {
+    if (localParticipant && getNotNullTracks(participant).length !== tracks.length) {
+      console.log('======here');
+      setTracks(getNotNullTracks(participant));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getNotNullTracks(participant).length]);
+
+  useEffect(() => {
+    const audioTrackObj = audioTrack?.track || audioTrack;
+    const videoTrackObj = videoTrack?.track || videoTrack;
+
+    [
+      ...((audioTrackObj && [audioTrackObj]) || []),
+      ...((videoTrackObj && [videoTrackObj]) || []),
+    ].forEach((track) => {
       setTrackListeners(track);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,9 +109,19 @@ export function Participant({
         publication.disable ? publication.disable() : publication.track.disable();
       });
     } else {
-      participant.audioTracks.forEach((publication) => {
-        publication.enable ? publication.enable() : publication.track.enable();
-      });
+      if (!audioTrack) {
+        createLocalAudioTrack().then(async (track) => {
+          if (localParticipant) {
+            participant.publishTrack(track, { priority: 'low' });
+            setTracks(getNotNullTracks(participant));
+            setLocalParticipant(participant);
+          }
+        });
+      } else {
+        participant.audioTracks.forEach((publication) => {
+          publication.enable ? publication.enable() : publication.track.enable();
+        });
+      }
     }
 
     setAudioEnabled(!audioEnabled);
@@ -98,15 +129,24 @@ export function Participant({
   };
 
   const setVideoMuted = () => {
-    //loca
     if (videoEnabled) {
       participant.videoTracks.forEach((publication) => {
         publication.disable ? publication.disable() : publication.track.disable();
       });
     } else {
-      participant.videoTracks.forEach((publication) => {
-        publication.enable ? publication.enable() : publication.track.enable();
-      });
+      if (!videoTrack) {
+        createLocalVideoTrack().then(async (track) => {
+          if (localParticipant) {
+            await participant.publishTrack(track, { priority: 'low' });
+            setTracks(getNotNullTracks(participant));
+            setLocalParticipant(participant);
+          }
+        });
+      } else {
+        participant.videoTracks.forEach((publication) => {
+          publication.enable ? publication.enable() : publication.track.enable();
+        });
+      }
     }
 
     setVideoEnabled(!videoEnabled);
@@ -132,31 +172,31 @@ export function Participant({
         />
       ))}
 
+      {!videoTrack && (
+        <div style={{ backgroundColor: 'black', width: '100%', height: '100%' }}></div>
+      )}
+
       {/* {!videoEnabled && ( */}
       <Text as="h2" style={styles.identity} fontSize="lg">
         {participant?.identity}
       </Text>
       {/* )} */}
       <div style={styles.icons}>
-        {audioTrack && (
-          <Icon
-            {...(localParticipant && { onClick: setAudioMuted })}
-            as={audioEnabled ? FiMic : FiMicOff}
-            w={8}
-            h={6}
-            color={'white'}
-          />
-        )}
+        <Icon
+          {...(localParticipant && { onClick: setAudioMuted })}
+          as={audioEnabled ? FiMic : FiMicOff}
+          w={8}
+          h={6}
+          color={'white'}
+        />
 
-        {videoTrack && (
-          <Icon
-            {...(localParticipant && { onClick: setVideoMuted })}
-            as={videoEnabled ? FiVideo : FiVideoOff}
-            w={8}
-            h={6}
-            color={'white'}
-          />
-        )}
+        <Icon
+          {...(localParticipant && { onClick: setVideoMuted })}
+          as={videoEnabled ? FiVideo : FiVideoOff}
+          w={8}
+          h={6}
+          color={'white'}
+        />
 
         {children}
       </div>
@@ -164,7 +204,7 @@ export function Participant({
   );
 }
 
-const styles = {
+const styles: StylesDictionary = {
   participant: {
     position: 'relative',
     marginLeft: '.75vw',
@@ -174,6 +214,7 @@ const styles = {
     width: '300px',
     display: 'flex',
     justifyContent: 'center',
+    minHeight: '180px',
   },
   activeWindowParticipant: {
     position: 'relative',
@@ -183,6 +224,7 @@ const styles = {
     overflow: 'hidden',
     display: 'flex',
     justifyContent: 'center',
+    minHeight: '180px',
   },
   identity: {
     position: 'absolute',
